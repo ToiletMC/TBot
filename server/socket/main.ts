@@ -27,7 +27,7 @@ export default defineIOHandler((io) => {
           console.log("spawn");
         });
         bot.on("message", (jsonMsg) => {
-          socket.emit("receive chat", options, jsonMsg);
+          socket.emit("receive chat", options, jsonMsg.toHTML());
           console.log(jsonMsg.toAnsi());
         });
         bot.on("kicked", (reason) => {

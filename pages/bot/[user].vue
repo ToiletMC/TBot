@@ -54,14 +54,10 @@ onMounted(() => {
   bot.value = JSON.parse(localStorage.getItem("bots") || "[]").find(
     (bot: Bot) => bot.user === route.params.user
   );
-  socket.on(
-    "receive chat",
-    (target: Bot, jsonMsg: import("prismarine-chat").ChatMessage) => {
-      if (target.user !== route.params.user) return;
-      logs.value.push(jsonMsg.toHTML());
-      console.log(jsonMsg.toAnsi());
-    }
-  );
+  socket.on("receive chat", (target: Bot, html: string) => {
+    if (target.user !== route.params.user) return;
+    logs.value.push(html);
+  });
   socket.on("end", (target: Bot, reason: string) => {
     if (target.user !== route.params.user) return;
     logs.value.push(`disconnect: ${reason}`);
