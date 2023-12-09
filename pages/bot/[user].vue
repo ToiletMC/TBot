@@ -35,10 +35,23 @@
     </v-row>
     <v-row>
       <v-col :cols="11">
-        <v-text-field label="发送消息或命令" />
+        <v-text-field label="发送消息或命令" v-model="msg" auto-grow />
       </v-col>
       <v-col>
-        <v-btn icon="mdi-send" />
+        <v-btn icon="mdi-send" @click="socket.emit('chat', bot, msg)" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-chip color="green" @click="socket.emit('chat', bot, '/tpaccept')">
+          同意传送请求
+        </v-chip>
+        <v-chip color="primary" @click="socket.emit('chat', bot, '/list')">
+          玩家列表
+        </v-chip>
+        <v-chip color="red" @click="socket.emit('chat', bot, '/logout')">
+          断开连接
+        </v-chip>
       </v-col>
     </v-row>
   </v-container>
@@ -49,6 +62,7 @@ const route = useRoute();
 const bot = ref<Bot | null>(null);
 const logs = ref<string[]>([]);
 const socket = useSocket();
+const msg = ref("");
 
 onMounted(() => {
   bot.value = JSON.parse(localStorage.getItem("bots") || "[]").find(
@@ -57,10 +71,15 @@ onMounted(() => {
   socket.on("receive chat", (target: Bot, html: string) => {
     if (target.user !== route.params.user) return;
     logs.value.push(html);
+    document.querySelector(".v-list")!.scrollTop =
+      document.querySelector(".v-list")!.scrollHeight;
   });
   socket.on("end", (target: Bot, reason: string) => {
     if (target.user !== route.params.user) return;
-    logs.value.push(`disconnect: ${reason}`);
+    logs.value.push(`断开连接: ${reason}`);
+    bot.value!.running = false;
+    document.querySelector(".v-list")!.scrollTop =
+      document.querySelector(".v-list")!.scrollHeight;
   });
 });
 </script>

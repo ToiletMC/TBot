@@ -23,12 +23,9 @@ export default defineIOHandler((io) => {
         bots.push(bot);
         bot.once("spawn", () => {
           bot.chat(`/login ${options.password}`);
-          bot.chat("Hello world");
-          console.log("spawn");
         });
         bot.on("message", (jsonMsg) => {
           socket.emit("receive chat", options, jsonMsg.toHTML());
-          console.log(jsonMsg.toAnsi());
         });
         bot.on("kicked", (reason) => {
           socket.emit("end", options, reason);
@@ -45,6 +42,20 @@ export default defineIOHandler((io) => {
       }) => {
         bots.find((bot) => bot.username === options.user)?.quit();
         bots = bots.filter((bot) => bot.username !== options.user);
+      }
+    );
+    socket.on(
+      "chat",
+      (
+        options: {
+          user: string;
+          password: string;
+          running: boolean;
+          logs: string[];
+        },
+        msg: string
+      ) => {
+        bots.find((bot) => bot.username === options.user)?.chat(msg);
       }
     );
   });
