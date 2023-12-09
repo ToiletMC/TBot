@@ -29,7 +29,7 @@
     <v-row>
       <v-col>
         <v-list :height="500" density="compact" rounded>
-          <v-list-item v-for="log in logs" :title="log" />
+          <v-list-item v-for="log in logs" v-html="log" />
         </v-list>
       </v-col>
     </v-row>
